@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Study Level</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container mt-5">
+
+<h2>Create Study Level</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Save Study Level</button>
+</form>
+
+<hr>
+<h3>Study Levels List</h3>
+<table class="table table-bordered mt-3">
+    <thead class="table-dark">
+    <tr>
+        <th>#</th>
+        <th>Level</th>
+        <th>Specialty</th>
+        <th>School</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for level in levels %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ level.level }}</td>
+            <td>{{ level.specialty }}</td>
+            <td>{{ level.school }}</td>
+        </tr>
+    {% empty %}
+        <tr>
+            <td colspan="4">No study levels available.</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+</body>
+</html>

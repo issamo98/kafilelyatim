@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management</title>
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #166088;
+            --accent-color: #4fc3f7;
+            --light-gray: #f5f5f5;
+            --dark-gray: #333;
+            --success-color: #4caf50;
+            --danger-color: #f44336;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-gray);
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+
+        h1, h2, h3 {
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+        }
+
+        .form-container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="date"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent-color);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(79, 195, 247, 0.2);
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: var(--secondary-color);
+        }
+
+        #add-form {
+            background-color: var(--success-color);
+            margin-bottom: 20px;
+        }
+
+        #add-form:hover {
+            background-color: #3d8b40;
+        }
+
+        .formset-form {
+            background-color: var(--light-gray);
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .student-list {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        li:last-child {
+            border-bottom: none;
+        }
+
+        li:hover {
+            background-color: var(--light-gray);
+        }
+
+        .student-info {
+            flex-grow: 1;
+        }
+
+        .student-actions a {
+            margin-left: 15px;
+            text-decoration: none;
+            color: var(--primary-color);
+            transition: color 0.3s;
+        }
+
+        .student-actions a:hover {
+            color: var(--secondary-color);
+        }
+
+        .edit-link {
+            color: var(--success-color) !important;
+        }
+
+        .delete-link {
+            color: var(--danger-color) !important;
+        }
+
+        .empty-state {
+            color: #666;
+            font-style: italic;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .total-students {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: inline-block;
+        }
+    </style>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
+    <a class="navbar-brand fw-bold" href="{% url 'create_student' %}">KAFIL AL YATIM</a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+                <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'create_student' %}">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'mark_attendance' %}active{% endif %}" href="{% url 'mark_attendance' %}">Mark Attendance</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'subscription_summary' %}active{% endif %}" href="{% url 'subscription_summary' %}">Subscription Summary</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'teacher_paycheck' %}active{% endif %}" href="{% url 'teacher_paycheck' %}">Teachers Paycheck</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'control_panel' %}active{% endif %}" href="{% url 'control_panel' %}">Control Panel</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Inside the main form container -->
+<div class="form-container">
+    <h1>Créer un nouvel élève / إنشاء تلميذ جديد</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="form-group">
+            {{ student_form.as_p }}
+        </div>
+
+        <h3>Inscrire aux Matierès / التسجيل في المواد</h3>
+        <div id="formset-container">
+            {{ formset.management_form }}
+            {% for form in formset %}
+                <div class="formset-form">
+                    {{ form.as_p }}
+                </div>
+            {% endfor %}
+        </div>
+
+        <button type="button" id="add-form">+ Ajouter une classe / إضافة قسم</button>
+        <br><br>
+        <button type="submit">Enregistrer l'élève / حفظ التلميذ</button>
+    </form>
+</div>
+
+<div class="student-list">
+    <form method="get" class="mb-3 d-flex align-items-center">
+        <label for="level" class="me-2">Level</label>
+        <select name="level" id="level" class="form-select me-2" style="max-width: 250px;">
+            <option value="">-- Choisir un niveau / اختر المستوى --</option>
+            {% for level in levels %}
+                <option value="{{ level.id }}" {% if level.id|stringformat:"s" == selected_level_id %}selected{% endif %}>
+                    {{ level.name }}
+                </option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-primary">Filter</button>
+    </form>
+
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h1>Liste des élèves / قائمة التلاميذ</h1>
+        <span class="total-students">Nombre total: {{ students|length }} / العدد الإجمالي</span>
+    </div>
+
+    {% if students %}
+        <ul>
+            {% for student in students %}
+                <li>
+                    <div class="student-info">
+                        <strong>{{ student.full_name }}</strong>
+                        <div style="font-size: 0.9em; color: #666;">
+                            Niveaux / المستويات: {{ student.levels.all|join:", " }} |
+                            Inscrit à / مسجل في:
+                            {% with student.enrollments.all as enrolled_classes %}
+                                {% if enrolled_classes %}
+                                    {{ enrolled_classes|join:", " }}
+                                {% else %}
+                                    <em>Aucun / لا يوجد</em>
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+                    </div>
+                    <div class="student-actions">
+                        <a href="{% url 'edit_student' student.id %}" class="edit-link">✏️ Modifier / تعديل</a>
+                        <a href="{% url 'delete_student' student.id %}" class="delete-link" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet élève ? / هل أنت متأكد من حذف هذا التلميذ؟')">🗑️ Supprimer / حذف</a>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <div class="empty-state">
+            Aucun élève trouvé. Créez le premier ci-dessus. <br> لم يتم العثور على تلاميذ. أضف تلميذا جديدا أعلاه.
+        </div>
+    {% endif %}
+</div>
+
+
+<script>
+    const container = document.getElementById('formset-container');
+    const addBtn = document.getElementById('add-form');
+
+    addBtn.addEventListener('click', function () {
+        const totalForms = document.getElementById('id_form-TOTAL_FORMS');
+        const currentFormCount = parseInt(totalForms.value);
+
+        // Clone the first formset form
+        const formsetForms = container.querySelectorAll('.formset-form');
+        if (formsetForms.length === 0) return;
+
+        const newFormHtml = formsetForms[0].cloneNode(true);
+        const formRegex = new RegExp(`form-(\\d){1}-`, 'g');
+
+        newFormHtml.innerHTML = newFormHtml.innerHTML.replace(formRegex, `form-${currentFormCount}-`);
+
+        // Clear input values
+        const inputs = newFormHtml.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            if (input.type !== 'hidden') {
+                if (input.tagName === 'SELECT') {
+                    input.selectedIndex = 0;
+                } else {
+                    input.value = '';
+                }
+            }
+        });
+
+        container.appendChild(newFormHtml);
+        totalForms.value = currentFormCount + 1;
+    });
+</script>
+<!-- Bootstrap JS Bundle (includes Popper) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76A2z02tPqdjFqkDdqrkD1yfQ3l+L2e4RS0LqUOmIljzB1zjF7w4nUOHpm+n0PB" crossorigin="anonymous"></script>
+
+</body>
+</html>

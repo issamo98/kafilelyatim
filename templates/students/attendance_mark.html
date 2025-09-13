@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Management</title>
+    <!-- Bootstrap 5 CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --success: #4cc9f0;
+            --warning: #f8961e;
+            --danger: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        h1, h2, h3 {
+            color: var(--secondary);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 28px;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+
+        h3 {
+            color: var(--primary);
+            font-size: 22px;
+            margin-top: 20px;
+        }
+
+        .filter-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        select, input[type="date"], input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: var(--transition);
+            background-color: white;
+        }
+
+        select:focus, input:focus {
+            border-color: var(--accent);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.2);
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: var(--transition);
+            align-self: flex-end;
+        }
+
+        button:hover {
+            background-color: var(--secondary);
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+        }
+
+        .btn-success:hover {
+            background-color: #3aa8d1;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            box-shadow: var(--box-shadow);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: rgba(72, 149, 239, 0.05);
+        }
+
+        .attendance-select {
+            padding: 8px 12px;
+            border-radius: var(--border-radius);
+            border: 1px solid #ddd;
+            background-color: white;
+            margin-left: 10px;
+        }
+
+        .status-present { color: var(--success); }
+        .status-absent { color: var(--danger); }
+        .status-late { color: var(--warning); }
+        .status-excused { color: var(--gray); }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--gray);
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .filter-form {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
+    <a class="navbar-brand fw-bold" href="{% url 'create_student' %}">KAFIL AL YATIM</a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+                <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'create_student' %}">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'mark_attendance' %}active{% endif %}" href="{% url 'mark_attendance' %}">Mark Attendance</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'subscription_summary' %}active{% endif %}" href="{% url 'subscription_summary' %}">Subscription Summary</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'teacher_paycheck' %}active{% endif %}" href="{% url 'teacher_paycheck' %}">Teachers Paycheck</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'control_panel' %}active{% endif %}" href="{% url 'control_panel' %}">Control Panel</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+    <h1>Student Attendance System / نظام حضور الطلاب</h1>
+
+    <div class="card">
+        <h2>Filter Students / تصفية الطلاب</h2>
+        <form method="get" class="filter-form">
+            <div class="form-group">
+                <label for="level">Level / المستوى</label>
+                <select name="level" id="level" onchange="this.form.submit()">
+                    <option value="">All Levels / كل المستويات</option>
+                    {% for level in levels %}
+                        <option value="{{ level.id }}" {% if level.id|stringformat:"s" == selected_level %}selected{% endif %}>
+                            {{ level.level }} {{ level.school.name }} {{ level.specialty.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="classroom">Class / القسم</label>
+                <select name="classroom" id="classroom" onchange="this.form.submit()">
+                    <option value="">All Classes / كل الأقسام</option>
+                    {% for c in classrooms %}
+                        <option value="{{ c.id }}" {% if c.id|stringformat:"s" == selected_classroom %}selected{% endif %}>
+                            {{ c.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="date">Date / التاريخ</label>
+                <input type="date" name="date" id="date" value="{{ selected_date }}" onchange="this.form.submit()">
+            </div>
+
+            <button type="submit">Apply Filters / تطبيق المرشحات</button>
+        </form>
+    </div>
+
+    {% if students %}
+        <div class="card">
+            <h2>Record Attendance - {{ selected_date }} / تسجيل الحضور - {{ selected_date }}</h2>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="date" value="{{ selected_date }}">
+
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Student Name / اسم الطالب</th>
+                        <th>Attendance Status / حالة الحضور</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for student in students %}
+                        <tr>
+                            <td>{{ student.full_name }}</td>
+                            <td>
+                                <select name="status_{{ student.id }}" class="attendance-select">
+                                    <option value="present" class="status-present">Present / حاضر</option>
+                                    <option value="absent" class="status-absent">Absent / غائب</option>
+                                    <option value="late" class="status-late">Late / متأخر</option>
+                                    <option value="excused" class="status-excused">Excused / معذور</option>
+                                </select>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+                <div style="text-align: right; margin-top: 20px;">
+                    <button type="submit" class="btn-success">Submit Attendance / إرسال الحضور</button>
+                </div>
+            </form>
+        </div>
+    {% endif %}
+
+
+    {% if submitted_attendance %}
+        <div class="card">
+            <h3>Attendance Records for {{ selected_date }} / سجلات الحضور لـ {{ selected_date }}</h3>
+            <table>
+                <thead>
+                <tr>
+                    <th>Student / الطالب</th>
+                    <th>Status / الحالة</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for record in submitted_attendance %}
+                    <tr>
+                        <td>{{ record.enrolled_class.student.full_name }}</td>
+                        <td class="status-{{ record.status }}">
+                            {{ record.get_status_display }}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+
+    {% if not students and not submitted_attendance %}
+        <div class="card">
+            <div class="empty-state">
+                No students found matching your criteria. Please adjust your filters.
+                / لم يتم العثور على طلاب وفقاً لمعاييرك. يرجى تعديل الفلاتر.
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+
+<script>
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const dateInput = document.getElementById('date');
+        if (dateInput && !dateInput.value) {
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.value = today;
+        }
+
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76A2z02tPqdjFqkDdqrkD1yfQ3l+L2e4RS0LqUOmIljzB1zjF7w4nUOHpm+n0PB" crossorigin="anonymous"></script>
+
+</body>
+</html>

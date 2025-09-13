@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Profile</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container py-5">
+    <div class="card shadow-lg p-4">
+        <h2 class="text-center mb-4">Profil Étudiant / الملف الشخصي للطالب</h2>
+
+        <dl class="row">
+            <dt class="col-sm-4">Nom & Prénom / الاسم و اللقب</dt>
+            <dd class="col-sm-8">{{ student.full_name }} {{ student.last_name }}</dd>
+
+            <dt class="col-sm-4">Date de Naissance / تاريخ الميلاد</dt>
+            <dd class="col-sm-8">{{ student.date_of_birth }}</dd>
+
+            <dt class="col-sm-4">Niveau d'Étude / المستوى الدراسي</dt>
+            <dd class="col-sm-8">
+                {% for enr in enrollments %}
+                    {{ enr.enrolled_class.level }}
+                {% endfor %}
+            </dd>
+
+            <dt class="col-sm-4">Matierès / المواد</dt>
+            <dd class="col-sm-8">
+                <ul class="mb-0">
+                    {% for enr in enrollments %}
+                        <li>
+                            {{ enr.enrolled_class.name }}
+                            — 
+                            {% if enr.enrolled_class.teacher %} — {{ enr.enrolled_class.teacher.full_name }}{% endif %}
+                            — {{ enr.monthly_fee }} DA
+                        </li>
+                    {% empty %}
+                        <em>Aucune / لا يوجد</em>
+                    {% endfor %}
+                </ul>
+            </dd>
+
+            <dt class="col-sm-4">Téléphone des parents / هاتف الأولياء</dt>
+            <dd class="col-sm-8">{{ student.parents_number }}</dd>
+
+            <dt class="col-sm-4">Abonnement Payé ? / هل الاشتراك مدفوع؟</dt>
+            <dd class="col-sm-8">
+                {% if student.sub_payed %}
+                    ✅ Oui / نعم
+                {% else %}
+                    ❌ Non / لا
+                {% endif %}
+            </dd>
+
+            <dt class="col-sm-4">Montant Abonnement / مبلغ الاشتراك</dt>
+            <dd class="col-sm-8">{{ student.sub_montant }} DA</dd>
+        </dl>
+
+        <div class="text-center mt-4">
+            <a href="{% url 'control_panel' %}" class="btn btn-secondary">← Retour / رجوع</a>
+        </div>
+    </div>
+</div>
+
+{% if student.sub_payed %}
+    <div class="text-center mt-3">
+        <a href="{% url 'print_subscription_receipt' student.id %}" target="_blank" class="btn btn-success">
+            🧾 Print Receipt / طباعة الوصل
+        </a>
+    </div>
+{% endif %}
+
+
+</body>
+</html>

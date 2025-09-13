@@ -1,0 +1,298 @@
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Subscription Summary</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --accent-color: #e74c3c;
+            --light-gray: #f5f5f5;
+            --dark-gray: #333;
+            --border-radius: 4px;
+            --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-gray);
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light-gray);
+        }
+
+        form[method="get"] {
+            background: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: flex-end;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--dark-gray);
+        }
+
+        select, input[type="date"], input[type="number"] {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            width: 100%;
+        }
+
+        button, .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover, .btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: var(--box-shadow);
+            background: white;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: var(--light-gray);
+        }
+
+        tr:hover {
+            background-color: #f0f0f0;
+        }
+
+        ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 5px;
+        }
+
+        .filter-info {
+            background-color: #e8f4fc;
+            padding: 10px 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .receipt-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .receipt-link:hover {
+            color: var(--secondary-color);
+            text-decoration: underline;
+        }
+
+        .save-btn {
+            background-color: #2ecc71;
+        }
+
+        .save-btn:hover {
+            background-color: #27ae60;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            color: #777;
+        }
+    </style>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+</head>
+<body>
+<!-- navbar.html -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
+    <a class="navbar-brand fw-bold" href="{% url 'create_student' %}">KAFIL AL YATIM</a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+                <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'create_student' %}">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'mark_attendance' %}active{% endif %}" href="{% url 'mark_attendance' %}">Mark Attendance</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'subscription_summary' %}active{% endif %}" href="{% url 'subscription_summary' %}">Subscription Summary</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'teacher_paycheck' %}active{% endif %}" href="{% url 'teacher_paycheck' %}">Teachers Paycheck</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'control_panel' %}active{% endif %}" href="{% url 'control_panel' %}">Control Panel</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<h1>Résumé des abonnements / ملخص الاشتراكات</h1>
+
+<form method="get">
+    <div>
+        <label for="level">Niveau / المستوى:</label>
+        <select name="level" id="level">
+            <option value="">-- Choisir un niveau / اختر المستوى --</option>
+            {% for level in levels %}
+                <option value="{{ level.id }}" {% if level.id|stringformat:"s" == selected_level_id %}selected{% endif %}>
+                    {{ level.level }} {{ level.school.name }} {{ level.specialty.name }}
+
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div>
+        <label for="start_date">De / من:</label>
+        <input type="date" name="start_date" value="{{ start_date }}">
+    </div>
+
+    <div>
+        <label for="end_date">À / إلى:</label>
+        <input type="date" name="end_date" value="{{ end_date }}">
+    </div>
+
+    <button type="submit">Filtrer / تصفية</button>
+</form>
+
+{% if selected_level_id or start_date or end_date %}
+    <div class="filter-info">
+        <strong>Filtré par / تمت التصفية حسب:</strong>
+        {% if selected_level_id %}
+            Niveau : {{ levels|get_level_name:selected_level_id }},
+        {% endif %}
+        {% if start_date %}
+            De : {{ start_date }},
+        {% endif %}
+        {% if end_date %}
+            À : {{ end_date }}
+        {% endif %}
+    </div>
+{% endif %}
+
+{% if students_data %}
+    <table>
+        <thead>
+        <tr>
+            <th>Nom et prénom / الاسم و اللقب</th>
+            <th>Classes / الأقسام</th>
+            <th>Total de présences / عدد الحصص</th>
+            <th>Total estimé / المبلغ الإجمالي</th>
+            <th>Total payé / المبلغ المدفوع</th>
+            <th>Reste / الباقي</th>
+            <th>Action / إجراء</th>
+            <th>Reçu / الإيصال</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for data in students_data %}
+            <form method="post" action="{% url 'update_payment' %}">
+                {% csrf_token %}
+                <tr>
+                    <td>{{ data.student.full_name }}</td>
+                    <td>
+                        <ul>
+                            {% for detail in data.attendance_details %}
+                                <li>
+                                    {{ detail.class_name }}:
+                                    {{ detail.attendance_count }} x
+                                    {{ detail.fee }} DA =
+                                    {{ detail.subtotal }} DA
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td>{{ data.total_attendance }}</td>
+                    <td>{{ data.total_estimated }} DA</td>
+
+                    <input type="hidden" name="student_id" value="{{ data.student.id }}">
+                    <input type="hidden" name="start_date" value="{{ request.GET.start_date }}">
+                    <input type="hidden" name="end_date" value="{{ request.GET.end_date }}">
+                    <input type="hidden" name="level" value="{{ request.GET.level }}">
+
+                    <td>
+                        <input type="number" name="total_paid" value="{{ data.total_paid|default:0 }}" step="0.01" style="width: 80px;">
+                    </td>
+                    <td>{{ data.remaining|default:"0.00" }} DA</td>
+                    <td><button type="submit" class="save-btn">Enregistrer / حفظ</button></td>
+                    <td>
+                        {% if data.student.id %}
+                            <a href="{% url 'print_receipt' data.student.id %}?total_paid={{ data.total_paid|default_if_none:0 }}&start_date={{ request.GET.start_date }}&end_date={{ request.GET.end_date }}&level={{ request.GET.level }}&remaining={{ data.remaining|default_if_none:0 }}"
+                               class="receipt-link">
+                                Imprimer le reçu / طباعة الإيصال
+                            </a>
+                        {% endif %}
+                    </td>
+                </tr>
+            </form>
+        {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <div class="no-data">
+        <p>Aucune donnée trouvée / لا توجد بيانات مطابقة للبحث</p>
+    </div>
+{% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76A2z02tPqdjFqkDdqrkD1yfQ3l+L2e4RS0LqUOmIljzB1zjF7w4nUOHpm+n0PB" crossorigin="anonymous"></script>
+
+</body>
+</html>

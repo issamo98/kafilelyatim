@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment Receipt / وصل الدفع</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .receipt {
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .header { text-align: center; margin-bottom: 20px; }
+        .details { margin: 20px 0; }
+        .detail-row { display: flex; margin-bottom: 10px; }
+        .detail-label { font-weight: bold; width: 250px; }
+        .footer { text-align: center; margin-top: 30px; font-size: 0.9em; }
+        @media print {
+            .no-print { display: none; }
+            body { padding: 0; }
+        }
+    </style>
+</head>
+<body>
+<div class="receipt">
+    <div class="header">
+        <h2>PAYMENT RECEIPT / وصل الدفع</h2>
+        <p>Receipt Date / تاريخ الوصل: {{ receipt_date }}</p>
+    </div>
+
+    <div class="details">
+        <div class="detail-row">
+            <span class="detail-label">Student ID / رقم الطالب:</span>
+            <span>{{ student_id }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Student Name / اسم الطالب:</span>
+            <span>{{ student.full_name }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Level / المستوى:</span>
+            <span>{{ level }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Period / الفترة:</span>
+            <span>{{ start_date }} to {{ end_date }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Amount Paid / المبلغ المدفوع:</span>
+            <span>{{ total_paid }} DA</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Remaining Amount / المبلغ المتبقي:</span>
+            <span>{{ remaining|default:"0.00" }} DA</span>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Thank you for your payment! / شكرا على الدفع</p>
+        <p>This is an official receipt / هذا وصل رسمي</p>
+    </div>
+</div>
+
+<div class="no-print" style="text-align: center; margin-top: 20px;">
+    <button onclick="window.print()">Print Receipt / طباعة الوصل</button>
+    <button onclick="window.close()">Close / إغلاق</button>
+</div>
+</body>
+</html>
